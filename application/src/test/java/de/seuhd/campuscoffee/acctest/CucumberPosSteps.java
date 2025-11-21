@@ -92,6 +92,7 @@ public class CucumberPosSteps {
     }
 
     // TODO: Add Given step for new scenario
+    //uses the same @Given as above
 
     // When -----------------------------------------------------------------------
 
@@ -101,8 +102,19 @@ public class CucumberPosSteps {
         assertThat(createdPosList).size().isEqualTo(posList.size());
     }
 
-    // TODO: Add When step for new scenario
+    @When("I update the existing POS with the name {string} with the description {string}")
+    public void updatePosDescriptionByName(String name, String description) {
+        PosDto existingPos = retrievePosByName(name);
+        assertThat(existingPos).isNotNull();
 
+        PosDto posWithUpdatedDescription = existingPos.toBuilder()
+                .description(description)
+                .build();
+
+        List<PosDto> updatedPosList = updatePos(List.of(posWithUpdatedDescription));
+        assertThat(updatedPosList).hasSize(1);
+        updatedPos = updatedPosList.getFirst();
+    }
     // Then -----------------------------------------------------------------------
 
     @Then("the POS list should contain the same elements in the same order")
@@ -113,5 +125,10 @@ public class CucumberPosSteps {
                 .containsExactlyInAnyOrderElementsOf(createdPosList);
     }
 
-    // TODO: Add Then step for new scenario
+    @Then("the description of the POS with the name {string} is updated to {string}")
+    public void theDescriptionOfThePosWithTheNameIsUpdatedTo(String name, String expectedDescription) {
+        PosDto retrievedPos = retrievePosByName(name);
+        assertThat(retrievedPos.description()).isEqualTo(expectedDescription);
+
+    }
 }
